@@ -17,6 +17,14 @@
 #include QMK_KEYBOARD_H
 #include "keychron_common.h"
 
+// todo: use space cadet to open/close []
+// todo: when capslock, spell caps using the backlights
+// todo: https://docs.qmk.fm/custom_quantum_functions
+
+// i'm going to use this to flip auto shift for space bar when caps is active
+bool is_caps_active = false;
+
+
 enum layers {
     MAC_BASE,
     MAC_FN,
@@ -24,6 +32,7 @@ enum layers {
     WIN_FN,
 };
 
+// SC_LSPO (tap for (, hold for lshift) and SC_RSPC (tap for ), hold for rshift) are space cadet keys: https://docs.qmk.fm/features/space_cadet
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  [MAC_BASE] = LAYOUT_ansi_82(
@@ -48,7 +57,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_PGDN,
         KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,             KC_HOME,
         KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,  KC_UP,
-        KC_LCTL,  KC_LGUI,  KC_LALT,                                KC_SPC,                                 KC_RALT, MO(WIN_FN),KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT),
+        KC_LCTL,  KC_LGUI,  KC_LALT,                                KC_SPC,                                 KC_HOME, MO(WIN_FN),KC_END,  KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [WIN_FN] = LAYOUT_ansi_82(
         _______,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,            RGB_TOG,
@@ -73,5 +82,67 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!process_record_keychron_common(keycode, record)) {
         return false;
     }
-    return true;
+    switch (keycode) {
+        case KC_CAPS:
+            if (record->event.pressed) {
+                is_caps_active = !is_caps_active;
+            }
+
+            return true;
+        default:
+            return true;
+    }
+}
+
+bool get_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
+    switch(keycode) {
+        case KC_SPC:
+        case KC_MINS:
+            return true;
+        default:
+            return false;
+    }
+}
+
+void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+    switch(keycode) {
+        case KC_SPC:
+            if (is_caps_active) {
+                register_code16(!shifted ? KC_UNDERSCORE : KC_SPC);
+            } else {
+                register_code16(!shifted ? KC_SPC : KC_UNDERSCORE);
+            }
+
+            break;
+        case KC_MINS:
+            register_code16(!shifted ? KC_UNDERSCORE : KC_KP_MINUS);
+            break;
+        default:
+            if (shifted) {
+                add_weak_mods(MOD_BIT(KC_LSFT));
+            }
+            // & 0xFF gets the Tap key for Tap Holds, required when using Retro Shift
+            register_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+    }
+}
+
+void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+    switch(keycode) {
+        case KC_SPC:
+            if (is_caps_active) {
+                unregister_code16(!shifted ? KC_UNDERSCORE : KC_SPC);
+            } else {
+                unregister_code16(!shifted ? KC_SPC : KC_UNDERSCORE);
+            }
+
+            break;
+        case KC_MINS:
+            unregister_code16(!shifted ? KC_UNDERSCORE : KC_KP_MINUS);
+            break;
+        default:
+            // & 0xFF gets the Tap key for Tap Holds, required when using Retro Shift
+            // The IS_RETRO check isn't really necessary here, always using
+            // keycode & 0xFF would be fine.
+            unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+    }
 }
