@@ -17,8 +17,9 @@
 #include QMK_KEYBOARD_H
 #include "keychron_common.h"
 
+// todo: different button for space cadet ()
 // todo: use space cadet to open/close []
-// todo: when capslock, spell caps using the backlights
+// todo: lower time threshold for auto shift on space
 // todo: https://docs.qmk.fm/custom_quantum_functions
 
 // i'm going to use this to flip auto shift for space bar when caps is active
@@ -82,15 +83,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!process_record_keychron_common(keycode, record)) {
         return false;
     }
+    return true;
+}
+
+void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case KC_CAPS:
             if (record->event.pressed) {
                 is_caps_active = !is_caps_active;
             }
-
-            return true;
-        default:
-            return true;
     }
 }
 
