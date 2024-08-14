@@ -90,7 +90,7 @@ void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case KC_CAPS:
             if (host_keyboard_led_state().caps_lock) {
-                is_caps_active = !is_caps_active;
+                // is_caps_active = !is_caps_active;
             }
     }
 }
