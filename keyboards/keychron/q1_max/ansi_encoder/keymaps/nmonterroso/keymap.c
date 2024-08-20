@@ -97,7 +97,7 @@ void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 bool get_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
     switch(keycode) {
-        case KC_SPC:
+        // case KC_SPC:
         case KC_MINS:
             return true;
         default:
