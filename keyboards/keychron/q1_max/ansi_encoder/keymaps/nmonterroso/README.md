@@ -5,7 +5,12 @@ Default Keychron keymap plus:
 - **Shift+Home → End** (the Home key at the bottom of the column under the knob), via a QMK key override in `keymap.c`. Works on every layer; no UI will show it.
 - **VIA enabled**, so [launcher.keychron.com](https://launcher.keychron.com) (Chrome, keyboard plugged in via USB) recognizes the board for ordinary remaps without reflashing. Launcher remaps layer on top of this keymap in EEPROM; the key override keeps working regardless.
 
-Reminder: `Fn+Home` is already End in the default Fn layer, and `Fn+Tab` toggles the backlight.
+Handy Fn-layer defaults:
+
+- `Fn+Home` = End (in addition to the shift+Home override)
+- `Fn+Tab` or `Fn`+press the knob = toggle all backlight LEDs on/off (persists across power cycles)
+- `Fn`+rotate the knob = backlight brightness (all the way down also turns them off)
+- `Fn+Q` = cycle lighting effects
 
 ## Build
 
