@@ -30,7 +30,19 @@ enum {
     KC_FILE_EXPLORER,
     KC_SCREEN_SHOT,
     KC_CORTANA,
-    KC_SIRI,
+#ifdef WIN_LOCK_SCREEN_ENABLE
+    KC_WIN_LOCK_SCREEN,
+    __KC_WIN_LOCK_SCREEN_NEXT,
+#else
+    __KC_WIN_LOCK_SCREEN_NEXT = KC_CORTANA + 1,
+#endif
+#ifdef MAC_LOCK_SCREEN_ENABLE
+    KC_MAC_LOCK_SCREEN = __KC_WIN_LOCK_SCREEN_NEXT,
+    __KC_MAC_LOCK_SCREEN_NEXT,
+#else
+    __KC_MAC_LOCK_SCREEN_NEXT = __KC_WIN_LOCK_SCREEN_NEXT,
+#endif
+    KC_SIRI = __KC_MAC_LOCK_SCREEN_NEXT,
 #ifdef LK_WIRELESS_ENABLE
     BT_HST1,
     BT_HST2,
@@ -42,6 +54,10 @@ enum {
     PROF1,
     PROF2,
     PROF3,
+#endif
+#ifdef LED_MATRIX_ENABLE
+    BL_SPI,
+    BL_SPD,
 #endif
     NEW_SAFE_RANGE,
 };
@@ -63,16 +79,18 @@ enum {
 #define KC_FILE KC_FILE_EXPLORER
 #define KC_SNAP KC_SCREEN_SHOT
 #define KC_CTANA KC_CORTANA
+#define KC_WLCK KC_WIN_LOCK_SCREEN
+#define KC_MLCK KC_MAC_LOCK_SCREEN
 
 typedef struct PACKED {
     uint8_t len;
     uint8_t keycode[3];
 } key_combination_t;
 
+void keychron_common_init(void);
 bool process_record_keychron_common(uint16_t keycode, keyrecord_t *record);
 void keychron_common_task(void);
 
 #ifdef ENCODER_ENABLE
 void encoder_cb_init(void);
 #endif
-

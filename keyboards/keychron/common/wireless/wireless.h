@@ -1,4 +1,4 @@
-/* Copyright 2023 @ lokher (https://www.keychron.com)
+/* Copyright 2023~2025 @ lokher (https://www.keychron.com)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,8 @@ typedef struct {
 extern void register_wt_tasks(void);
 
 void wireless_init(void);
+void wireless_config_reset(void);
+
 void wireless_set_transport(wt_func_t *transport);
 void wireless(void);
 
@@ -84,7 +86,7 @@ void wireless_enter_reset_kb(uint8_t reason);
 void wireless_enter_discoverable_kb(uint8_t host_idx);
 void wireless_enter_reconnecting_kb(uint8_t host_idx);
 void wireless_enter_connected_kb(uint8_t host_idx);
-void wireless_enter_disconnected_kb(uint8_t host_idx);
+void wireless_enter_disconnected_kb(uint8_t host_idx, uint8_t reason);
 void wireless_enter_bluetooth_pin_code_entry_kb(void);
 void wireless_exit_bluetooth_pin_code_entry_kb(void);
 void wireless_enter_sleep_kb(void);
@@ -99,3 +101,6 @@ wt_state_t wireless_get_state(void);
 void wireless_low_battery_shutdown(void);
 
 bool process_record_wireless(uint16_t keycode, keyrecord_t *record);
+
+void wireless_raw_hid_rx(uint8_t *data, uint8_t length);
+
